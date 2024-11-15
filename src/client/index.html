@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Real-time Chat with Realms</title>
+  </head>
+  <body>
+    <h2>Real-time Chat with Realms and Rooms</h2>
+    <input type="text" id="realm" placeholder="Enter realm (e.g., EU or US)" />
+    <input type="text" id="room" placeholder="Enter room" />
+    <button onclick="joinRealmRoom()">Join Room in Realm</button>
+    <button onclick="leaveRealmRoom()">Leave Room in Realm</button>
+    <br /><br />
+    <input type="text" id="message" placeholder="Enter message" />
+    <button onclick="sendMessageToRealmRoom()">Send Message</button>
+
+    <ul id="messages"></ul>
+
+    <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
+    <script>
+      const socket = io('http://localhost:3000');
+
+      // Listener pour les messages
+      socket.on('message', function (data) {
+        const li = document.createElement('li');
+        li.textContent = data;
+        document.getElementById('messages').appendChild(li);
+      });
+
+      // Fonction pour rejoindre une room dans un realm
+      function joinRealmRoom() {
+        const realm = document.getElementById('realm').value.trim();
+        const room = document.getElementById('room').value.trim();
+        if (realm && room) {
+          socket.emit('joinRealmRoom', { realm, room });
+        } else {
+          alert('Veuillez entrer un realm et une room.');
+        }
+      }
+
+      // Fonction pour quitter une room dans un realm
+      function leaveRealmRoom() {
+        const realm = document.getElementById('realm').value.trim();
+        const room = document.getElementById('room').value.trim();
+        if (realm && room) {
+          socket.emit('leaveRealmRoom', { realm, room });
+        } else {
+          alert('Veuillez entrer un realm et une room.');
+        }
+      }
+
+      // Fonction pour envoyer un message à une room dans un realm
+      function sendMessageToRealmRoom() {
+        const realm = document.getElementById('realm').value.trim();
+        const room = document.getElementById('room').value.trim();
+        const message = document.getElementById('message').value.trim();
+        if (realm && room && message) {
+          socket.emit('messageToRealmRoom', { realm, room, message });
+        } else {
+          alert('Veuillez entrer un realm, une room et un message.');
+        }
+      }
+    </script>
+  </body>
+</html>
